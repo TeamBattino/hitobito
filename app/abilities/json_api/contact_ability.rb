@@ -22,7 +22,7 @@ module JsonApi
       # allow reading all contacts that are public
       can :read, CONTACT_MODELS, public: true
       # allow reading contacts of people on which the user has show_details permissions
-      can :read, CONTACT_MODELS,
+      can [:read, :create, :update, :destroy], CONTACT_MODELS,
           contactable_type: 'Person',
           contactable_id: permitted_people_ids(main_ability, people_scope)
       # TODO: implement rules for Group contactables (and any other existing contactable classes)

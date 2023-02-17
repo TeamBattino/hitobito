@@ -47,16 +47,16 @@ class ApplicationResource < Graphiti::Resource
   # we must authorize with initial instance attributes
   def authorize_save(model)
     if model.new_record?
-      current_ability.authorize!(:create, model, *model.changed_attributes.keys)
+      write_ability.authorize!(:create, model, *model.changed_attributes.keys)
     else
       attrs_from_db = model.attributes.merge(model.attributes_in_database)
       model_from_db = model.class.new(attrs_from_db)
-      current_ability.authorize!(:update, model_from_db, *model.changed_attributes.keys)
+      write_ability.authorize!(:update, model_from_db, *model.changed_attributes.keys)
     end
   end
 
   def authorize_destroy(model)
-    current_ability.authorize! :destroy, model
+    write_ability.authorize! :destroy, model
   end
 
   delegate :can?, to: :current_ability
@@ -65,6 +65,12 @@ class ApplicationResource < Graphiti::Resource
   # Used to filter accessible models in `#base_scope`.
   # Overwrite in subclass to use a different Ability instance.
   def index_ability
+    current_ability
+  end
+
+  # Used to authorize write operations.
+  # Overwrite in subclass to use a different Ability instance.
+  def write_ability
     current_ability
   end
 

@@ -5,10 +5,6 @@
 #  or later. See the COPYING file at the top-level directory or at
 #  https://github.com/hitobito/hitobito.
 
-# Can not be a base class since graphiti seems to get confused about base classes
-# for polymorphic relations.
-# Thus, the json api type was always contactable and the relation couldn't be correctly mapped.
-# Tried abstract_class = true, that didn't work either
 module ContactableResource
   extend ActiveSupport::Concern
 
@@ -18,24 +14,23 @@ module ContactableResource
 
     attribute :contactable_id, :integer
     attribute :contactable_type, :string
+
+    alias_method :index_ability, :contactable_ability
+    alias_method :write_ability, :contactable_ability
   end
 
-  def authorize_save(model)
-    current_ability.authorize!(:show_details, model.contactable)
-  end
-
-  def index_ability
-    IndexAbilityCache.index_ability(current_ability)
+  def contactable_ability
+    ContactableAbilityCache.get_or_build(current_ability)
   end
 
   private
 
   # building the `JsonApi::ContactAbility` as currently implemented is very expensive.
   # we cache it so it can be used from the other instances of this resource.
-  class IndexAbilityCache < ActiveSupport::CurrentAttributes
+  class ContactableAbilityCache < ActiveSupport::CurrentAttributes
     attribute :cache
 
-    def index_ability(main_ability)
+    def get_or_build(main_ability)
       self.cache ||= {}
       self.cache[main_ability.user] ||= contact_ability(main_ability)
     end

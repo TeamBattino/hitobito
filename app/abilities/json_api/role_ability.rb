@@ -10,7 +10,7 @@ module JsonApi
     include CanCan::Ability
 
     def initialize(main_ability, people_scope)
-      can :read, Role, person_id: permitted_people_ids(main_ability, people_scope)
+      can [:read, :create, :update, :destroy], Role, person_id: permitted_people_ids(main_ability, people_scope)
     end
 
     private
