@@ -33,4 +33,15 @@ class GroupResource < ApplicationResource
       # Note: this might lead to a performance penalty.
     end
   end
+
+  has_many :hierarchy, resource: GroupResource do
+    params do |hash, groups|
+      binding.pry
+      hash[:filter] = { id: groups.flat_map {|group| group.hierarchy.map(&:id) } }
+    end
+    assign do |_groups, _hierarchy_groups|
+      # We use the accessor from `NestedSet#hierarchy` and there is no setter method, so we skip this.
+      # Note: this might lead to a performance penalty.
+    end
+  end
 end

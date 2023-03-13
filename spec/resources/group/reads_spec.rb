@@ -8,11 +8,6 @@
 require 'spec_helper'
 
 RSpec.describe GroupResource, type: :resource do
-  # before do
-  #   set_user(people(:root))
-  #   allow_any_instance_of(described_class).to receive(:index_ability, &:current_ability)
-  # end
-
   describe 'serialization' do
     let!(:group) { groups(:bottom_group_two_one) }
 
@@ -94,6 +89,22 @@ RSpec.describe GroupResource, type: :resource do
         render
 
         layer_group_data = d[0].sideload(:layer_group)
+
+        expect(layer_group_data.id).to eq(group.layer_group_id)
+        expect(layer_group_data.jsonapi_type).to eq('groups')
+      end
+    end
+
+    describe 'hierarchy' do
+      before { params[:include] = 'hierarchy' }
+
+      it 'it works' do
+        # make sure our test subject has multiple elements in its hierarchy
+        expect(group.hierarchy.size).to be > 2
+
+        render
+        binding.pry
+        hierarchy_data = d[0].sideload(:hierarchy)
 
         expect(layer_group_data.id).to eq(group.layer_group_id)
         expect(layer_group_data.jsonapi_type).to eq('groups')
