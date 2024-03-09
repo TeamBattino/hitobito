@@ -97,6 +97,10 @@ gem 'vcard'
 gem 'view_component'
 gem 'webpacker'
 
+gem 'json', '< 2.7.0' # pinned to avoid breaking changes in 2.7.0
+
+
+
 # load after others because dependencies
 gem 'graphiti-openapi', github: 'puzzle/graphiti-openapi', tag: 'standalone/0.2'
 gem 'kaminari'
